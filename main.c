@@ -4,6 +4,8 @@
  *
  */
 
+/* Sensor manual: https://cdn-shop.adafruit.com/datasheets/Digital%20humidity%20and%20temperature%20sensor%20AM2302.pdf */
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdint.h>
@@ -38,7 +40,17 @@ int initsensor(void){
 
 	writepin(SENSOR_VCC, 1);
 
-	
+	/* Init sequence */
+	writepin(SENSOR_DATA, 0);
+	usleep(10000); /* Wait 10 ms */
+	writepin(SENSOR_DATA, 1);
+	usleep(40); /* Wait 40 us */
+	getpin(SENSOR_DATA); /* Set to input mode */
+	usleep(40); /* Wait approx. half of 80 us */
+	if(getpin(SENSOR_DATA)){ return -1; }; /* Should not be high */
+	usleep(80); /* Wait until about half way through second part */
+	if(!getpin(SENSOR_DATA)){ return -1; }; /* Should be high. */
+	usleep(40); /* Wait until data transmission starts. */
 
 };
 
