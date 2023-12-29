@@ -1,0 +1,3 @@
+[submodule "rpigpio"]
+	path = rpigpio
+	url = https://github.com/AZWaterWarriors/rpigpio.git
