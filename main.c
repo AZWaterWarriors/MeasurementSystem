@@ -25,3 +25,21 @@ int main(int argc, char *argv[]){
   };
 
 };
+
+int initsensor(void){
+
+
+
+};
+
+float gettemp(void){
+
+
+
+};
+
+float gethumid(void){
+
+
+
+};
