@@ -12,17 +12,10 @@
 #include <time.h>
 
 #include "measure.h"
-#include "rpigpio/electronics.h"
+#include "rpigpio/gpio.h"
 
 int initsensor(void);
-float gettemp(void);
-float gethumid(void);
-
-typedef struct reading_s{
-	uint16_t humid;
-	uint16_t temp;
-	uint8_t check;
-} reading_t;
+reading_t *getreading(void);
 
 int main(int argc, char *argv[]){
 
@@ -37,16 +30,16 @@ int main(int argc, char *argv[]){
 		reading = getreading();
 		
 		if(reading == NULL){
-			fprintf("ERROR, ERROR, ERROR\n");
+			fprintf(file, "ERROR, ERROR, ERROR\n");
 		}
 		else{
 			float humid = ((float)reading->humid)/10;
 			float temp = ((float)reading->temp)/10;
-			time_t time;
+			time_t rtime;
 			struct tm * timeinfo;
-			time(&time);
-			timeinfo = localtime(&time);
-			fprintf("%s, %.1f, %.1f\n", asctime(timeinfo), humid, temp);
+			time(&rtime);
+			timeinfo = localtime(&rtime);
+			fprintf(file, "%s, %.1f, %.1f\n", asctime(timeinfo), humid, temp);
 		};
 
 		usleep(WAIT_TIME);
@@ -86,7 +79,7 @@ reading_t *getreading(void){
 	};
 
 	reading->humid = (((uint16_t)buffer[0])<<8) | buffer[1];
-	reading->temp = (((uint_16_t)buffer[2])<<8) | buffer[3];
+	reading->temp = (((uint16_t)buffer[2])<<8) | buffer[3];
 	reading->check = buffer[4];
 
 	uint16_t test = reading->humid + reading->temp;

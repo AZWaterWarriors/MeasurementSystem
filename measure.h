@@ -7,12 +7,17 @@
 #ifndef _MEASURE_H
 #define _MEASURE_H
 
-#define SENSOR_VCC
-#define SENSOR_DATA
-#define WAIT_TIME
+#define SENSOR_VCC 19
+#define SENSOR_DATA 26
+#define WAIT_TIME 1000000*60
+
+typedef struct reading_s{
+	uint16_t humid;
+	uint16_t temp;
+	uint8_t check;
+} reading_t;
 
 int initsensor(void);
-float gettemp(void);
-float gethumid(void);
+reading_t *getreading(void);
 
 #endif
