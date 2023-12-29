@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <time.h>
 
 #include "measure.h"
 #include "rpigpio/electronics.h"
@@ -25,14 +26,31 @@ typedef struct reading_s{
 
 int main(int argc, char *argv[]){
 
-  setupio();
+  	setupio();
 
-  if(initsensor() != 0){ return -1; };
+	FILE * file = fopen("/var/waterwarriors/data", "a");
+
+	if(initsensor() != 0){ return -1; };
 
 	for(;;){
-    float temp = gettemp();
-    float humid = gethumid();
-  };
+		reading_t *reading = { 0 };
+		reading = getreading();
+		
+		if(reading == NULL){
+			fprintf("ERROR, ERROR, ERROR\n");
+		}
+		else{
+			float humid = ((float)reading->humid)/10;
+			float temp = ((float)reading->temp)/10;
+			time_t time;
+			struct tm * timeinfo;
+			time(&time);
+			timeinfo = localtime(&time);
+			fprintf("%s, %.1f, %.1f\n", asctime(timeinfo), humid, temp);
+		};
+
+		usleep(WAIT_TIME);
+ 	};
 
 };
 
