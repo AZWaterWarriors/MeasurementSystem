@@ -7,7 +7,9 @@
 #ifndef _MEASURE_H
 #define _MEASURE_H
 
-#define SENSOR_PIN
+#define SENSOR_VCC
+#define SENSOR_DATA
+#define WAIT_TIME
 
 int initsensor(void);
 float gettemp(void);
