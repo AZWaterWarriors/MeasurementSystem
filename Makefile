@@ -1,9 +1,12 @@
 all: measure
 
-.PHONY: clean spotless
+.PHONY: clean spotless rpigpio
 
-measure: main.c
-	cc -o measure main.c
+rpigpio:
+	cd rpigpio ; make
+
+measure: main.c rpigpio
+	cc -g -o measure main.c -L./rpigpio -lrpigpio
 
 clean:
 

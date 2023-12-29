@@ -19,7 +19,7 @@ reading_t *getreading(void);
 
 int main(int argc, char *argv[]){
 
-  	setupio();
+  	if(setupio() != 0){ return -1; };
 
 	FILE * file = fopen("/var/waterwarriors/data", "a");
 
