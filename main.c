@@ -19,8 +19,6 @@ reading_t *getreading(void);
 
 int main(int argc, char *argv[]){
 
-  	if(setupio() != 0){ return -1; };
-
 	FILE * file = fopen("/var/waterwarriors/data", "a");
 
 	if(initsensor() != 0){ return -1; };
