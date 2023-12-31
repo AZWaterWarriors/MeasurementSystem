@@ -19,7 +19,9 @@ reading_t *getreading(void);
 
 int main(int argc, char *argv[]){
 
-	FILE * file = fopen("/var/waterwarriors/data", "a");
+	if(argc < 2){ printf("Usage: measure { ofile }\n"); return -1; };
+
+	FILE * file = fopen(argv[1], "a");
 
 	fprintf(file, "Time, Relative Humidity, Temperature\n");
 	
