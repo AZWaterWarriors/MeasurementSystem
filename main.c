@@ -21,6 +21,8 @@ int main(int argc, char *argv[]){
 
 	FILE * file = fopen("/var/waterwarriors/data", "a");
 
+	fprintf(file, "Time, Relative Humidity, Temperature\n");
+	
 	if(initsensor() != 0){ return -1; };
 
 	for(;;){
