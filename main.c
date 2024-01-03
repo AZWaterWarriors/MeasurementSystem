@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <time.h>
+#include <fcntl.h>
 
 #include "measure.h"
 #include "rpigpio/gpio.h"
@@ -19,8 +20,22 @@ reading_t *getreading(void);
 
 int main(int argc, char *argv[]){
 
-	if(argc < 2){ printf("Usage: measure { ofile }\n"); return -1; };
+	if(argc < 2) || argc == 3{ printf("Usage: measure { ofile } [ -p { ffile } ]\n"); return -1; };
 
+	int usefifo = 0;
+	int fifofd = -1;
+	int oldout;
+
+	/* Make output (to stdout) go to FIFO instead */
+	if(argc > 3){ if( !strcmp(argv[2], "-p") ){
+		usefifo = 1;
+		fifofd = open(argv[3], O_WRONLY, 0600);
+		oldout = dup(fileno(stdout));
+		if((dup2(fifofd, fileno(stdout)) == -1) || fifofd == -1 || oldout == -1){
+			return -1;
+		};
+	};
+	
 	FILE * file = fopen(argv[1], "a");
 
 	fprintf(file, "Time, Relative Humidity, Temperature\n");
@@ -44,8 +59,18 @@ int main(int argc, char *argv[]){
 			fprintf(file, "%s, %.1f, %.1f\n", asctime(timeinfo), humid, temp);
 		};
 
+		fflush(stdout);
+		
 		usleep(WAIT_TIME);
  	};
+
+	if(usefifo){
+		close(fifofd);
+		dup2(oldout, fileno(stdout));
+		close(oldout);
+	};
+
+	return 0;
 
 };
 
