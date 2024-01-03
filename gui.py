@@ -277,7 +277,7 @@ quitBtn.pack(padx=2, pady=2)
 # finish toolbar
 toolbar.pack(side=TOP, fill=X)
 
-creditLabel = Label(root, text="Created by Eric Wang")
+creditLabel = Label(root, text="Created by the Water Warriors")
 creditLabel.pack(anchor=SE, side=BOTTOM)
 
 # mainloop
