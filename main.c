@@ -24,6 +24,7 @@ int main(int argc, char *argv[]){
 
 	int usefifo = 0;
 	int fifofd = -1;
+	int filefd = -1;
 	int oldout;
 
 	/* Make output (to stdout) go to FIFO instead */
@@ -34,11 +35,16 @@ int main(int argc, char *argv[]){
 		if((dup2(fifofd, fileno(stdout)) == -1) || fifofd == -1 || oldout == -1){
 			return -1;
 		};
-	};
-	
-	FILE * file = fopen(argv[1], "a");
+	}
+	else{
+		filefd = open(argv[3], O_WRONLY, 0600);
+		oldout = dup(fileno(stdout));
+		if((dup2(filefd, fileno(stdout)) == -1) || fifofd == -1 || oldout == -1){
+			return -1;
+		};
+	}
 
-	fprintf(file, "Time, Relative Humidity, Temperature\n");
+	printf("Time, Relative Humidity, Temperature\n");
 	
 	if(initsensor() != 0){ return -1; };
 
@@ -47,7 +53,7 @@ int main(int argc, char *argv[]){
 		reading = getreading();
 		
 		if(reading == NULL){
-			fprintf(file, "ERROR, ERROR, ERROR\n");
+			printf("ERROR, ERROR, ERROR\n");
 		}
 		else{
 			float humid = ((float)reading->humid)/10;
@@ -56,7 +62,7 @@ int main(int argc, char *argv[]){
 			struct tm * timeinfo;
 			time(&rtime);
 			timeinfo = localtime(&rtime);
-			fprintf(file, "%s, %.1f, %.1f\n", asctime(timeinfo), humid, temp);
+			printf("%s, %.1f, %.1f\n", asctime(timeinfo), humid, temp);
 		};
 
 		fflush(stdout);
@@ -64,11 +70,9 @@ int main(int argc, char *argv[]){
 		usleep(WAIT_TIME);
  	};
 
-	if(usefifo){
-		close(fifofd);
-		dup2(oldout, fileno(stdout));
-		close(oldout);
-	};
+	close((usefifo) ? fifofd : filefd);
+	dup2(oldout, fileno(stdout));
+	close(oldout);
 
 	return 0;
 
